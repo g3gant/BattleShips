@@ -379,9 +379,9 @@ bool SwitchGame()
     if (!shipsCollisions) {
 
       if (OpponentReadyToShoot){
-        game_mode = 4;
+        game_mode = 4; //Waiting for opponent shoot
       } else {
-         game_mode = 3;
+        game_mode = 3; //Shooting mode
       }
       SendIamReadyToShoot();
       clear_render();
