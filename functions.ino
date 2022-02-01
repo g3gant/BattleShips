@@ -399,7 +399,7 @@ bool SwitchGame()
 void MakeShot(byte x, byte y) // Sending the shot to the opponent and waiting on answer, we going to store all our shots in the array, with Hits and Misses
 {
     bool getAnswer = false;
-    byte ShotResult = 0; // 0 - Miss, 1 - Hit, 2 - Kill
+    int ShotResult = 0; // 0 - Miss, 1 - Hit, 2 - Kill
     //char msg = "";
     //msg = "s:"&x & "," & y;
     UDP.beginPacket(UDP.remoteIP(), UDP.remotePort());
@@ -408,4 +408,106 @@ void MakeShot(byte x, byte y) // Sending the shot to the opponent and waiting on
     UDP.write(",");
     UDP.write(y);
     UDP.endPacket();
+    
+    // Waiting on respond, add a sound of flying projectile
+    while (!getAnswer)
+    {
+      ShotResult = CheckShotResult();
+      delay(5);
+      if (ShotResult >= 0) 
+      {
+        getAnswer = true;  
+      }
+      
+    }
+    // Answer recieved, mark the shot on the field
+    if (ShotResult == 0)
+    {
+      arr_2[x][y] = 1; // Miss, delay (sound) and switch to opponent shooting
+    }
+    if (ShotResult == 1)
+    {
+      arr_2[x][y] = 2; // Hit, delay (sound), continue shooting
+    }
+    if (ShotResult == 2)
+    {
+      arr_2[x][y] = 2; // Kill, delay (sound), mark all neigbor cells as killed(red), count KilledShips+1, continue shooting
+      markAsKilled(x,y);
+    }
+    
+    
+}
+
+int CheckShotResult()
+{
+  int result=-1;
+  int packetSize = UDP.parsePacket();
+  if (packetSize) {
+        int len = UDP.read(packet, 255);
+        if (len > 0)
+        {
+          packet[len] = '\0';
+        }
+        Serial.print("Packet received: ");
+        Serial.println(packet);
+        Serial.println("From: ");
+        Serial.print(UDP.remoteIP());
+        Serial.print(":");
+        Serial.print(UDP.remotePort());
+        String myString = String(packet);
+        
+        if (myString == "Miss")
+        {
+          result = 0;
+        };
+        if (myString == "Hit")
+        {
+          result = 1;
+        };
+        if (myString == "Kill")
+        {
+          result = 2;
+          
+        };
+  
+          
+        
+  }
+  return result;
+}
+
+void markAsKilled(byte x, byte y) //Recurcive function for marking killed ship
+{
+  if (arr_2[x][y] !=2 ) return;
+  
+  if (arr_2[x][y] == 2) {
+   
+    arr_2[x][y]=3;
+
+    if (CheckNeighbors(x-1,y)){
+      markAsKilled(x-1, y);
+    }
+    if (CheckNeighbors(x+1,y)){
+      markAsKilled(x+1, y);
+    }    
+    if (CheckNeighbors(x,y-1)){
+      markAsKilled(x, y-1);
+    }
+    if (CheckNeighbors(x,y+1)){
+      markAsKilled(x, y+1);
+    }
+
+    }
+  
+
+}
+
+bool CheckNeighbors(byte x, byte y)
+{
+  if (x>=0 && x<=9 && y>=0 && y<=9) { 
+    return true;
+    } else {
+      return false;
+    }
+  
 }

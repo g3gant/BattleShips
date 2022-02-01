@@ -30,7 +30,19 @@ void Merge2Arrays(byte renderArr[10][10], byte  layer1arr[10][10], byte  layer2a
 
               renderArr[i][j] = layer1arr[i][j]>0?2:0;
               
-              renderArr[i][j] = layer2arr[i][j]>0?3:renderArr[i][j];
+              if (layer2arr[i][j] == 1)
+              {
+                renderArr[i][j] = 1;
+              }
+              if (layer2arr[i][j] == 2)
+              {
+                renderArr[i][j] = 4;
+              }
+              if (layer2arr[i][j] == 3)
+              {
+                renderArr[i][j] = 3;
+              }
+              //renderArr[i][j] = layer2arr[i][j]>0?3:renderArr[i][j];
               
 
 
@@ -85,6 +97,9 @@ void render(byte renderArr[10][10])
 
     if (col == 3 ){
       leds[i] = CRGB (50,0,0);
+    }
+    if (col == 4){
+      leds[i] = CRGB (50,30,10);
     }
     
  //Serial.println();
