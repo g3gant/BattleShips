@@ -24,8 +24,8 @@
 
 
 // Set WiFi credentials
-#define WIFI_SSID "iRidium"
-#define WIFI_PASS "$alamander303"
+#define WIFI_SSID "******"
+#define WIFI_PASS "**********"
 #define UDP_PORT 4210
 
 // UDP
